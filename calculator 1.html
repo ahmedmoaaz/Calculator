@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+</head>
+<style>
+  body {
+    font-family: monospace;
+    font-size: 50px;
+    background-color: rgb(45, 45, 45);
+    display: flex;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+  }
+  .button_number {
+    font-family: monospace;
+    font-size: 50px;
+    height: 80px;
+    width: 80px;
+    border-radius: 10px;
+  }
+  .Row {
+    padding: 3px;
+    margin: 3px;
+    display: flex;
+    width: 400px;
+    justify-content: space-around;
+  }
+  .top {
+    display: flex;
+    padding: 3px;
+    margin: 3px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .container {
+    width: 400px;
+    background-color: chocolate;
+    padding-right: 10px;
+    border-radius: 10px;
+  }
+  .result_div {
+    height: 80px;
+    margin: 3px;
+    padding: 3px;
+    width: 180px;
+  }
+  .result {
+    border-radius: 10px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    background-color: white;
+    width: 187px;
+    height: 100%;
+    border: 2px solid black;
+  }
+  .clear {
+    font-family: monospace;
+    font-size: 24px;
+    padding: 3px;
+    margin: 3px;
+    height: 80px;
+    width: 80px;
+    border-radius: 10px;
+  }
+  .delete {
+    font-size: 20px;
+  }
+  button:hover {
+    cursor: pointer;
+  }
+</style>
+<body>
+  <div class="container">
+    <div class="top">
+        <div class="result_div"><div class="result" id="result">0</div></div>
+        <button class="clear" id="clear">Clear</button>
+        <button class="delete clear" id="delete">Delete</button>
+    </div>
+    <div class="Row">
+      <button class="button_number" id="1">1</button>
+      <button class="button_number" id="2">2</button>
+      <button class="button_number" id="3">3</button>
+      <button class="button_number" id="+">+</button>
+    </div>
+    <div class="Row">
+      <button class="button_number" id="4">4</button>
+      <button class="button_number" id="5">5</button>
+      <button class="button_number" id="6">6</button> 
+      <button class="button_number" id="-">-</button>
+    </div>
+    <div class="Row">
+      <button class="button_number" id="7">7</button>
+      <button class="button_number" id="8">8</button>
+      <button class="button_number" id="9">9</button>
+      <button class="button_number" id="x">x</button>
+    </div>
+    <div class="Row">
+      <button class="button_number" id="0">0</button>
+      <button class="button_number" id=".">.</button>
+      <button class="button_number" id="equals">=</button>
+      <button class="button_number" id="/">/</button>
+    </div>
+  </div>
+  <script>
+    let currentInput = '';
+    let previousInput = '';
+    let operation = '';
+
+    function updateDisplay(value) {
+      document.getElementById('result').innerHTML = value || '0';
+    }
+
+    function handleNumber(num) {
+      if (currentInput === '0' && num === '0') return;
+      if (currentInput === '' && num === '0') return;
+      if (currentInput === '' && num === '.') return;
+      if (currentInput.includes('.') && num === '.') return;
+      currentInput += num;
+      updateDisplay(currentInput);
+    }
+
+    function handleOperation(op) {
+      if (currentInput === '' && (op === '-' || op === '+')) {
+        currentInput = op;
+        updateDisplay(currentInput);
+        return;
+      }
+      if (currentInput === '') return;
+      if (previousInput !== '') {
+        calculate();
+      }
+      previousInput = currentInput;
+      currentInput = '';
+      operation = op;
+    }
+
+    function calculate() {
+      let result;
+      const prev = parseFloat(previousInput);
+      const curr = parseFloat(currentInput);
+      switch (operation) {
+        case '+':
+          result = prev + curr;
+          break;
+        case '-':
+          result = prev - curr;
+          break;
+        case 'x':
+          result = prev * curr;
+          break;
+        case '/':
+          result = prev / curr;
+          break;
+        default:
+          return;
+      }
+      currentInput = result.toString();
+      previousInput = '';
+      operation = '';
+      updateDisplay(currentInput);
+    }
+
+    function clear() {
+      currentInput = '';
+      previousInput = '';
+      operation = '';
+      updateDisplay();
+    }
+
+    function deleteLast() {
+      currentInput = currentInput.slice(0, -1);
+      updateDisplay(currentInput);
+    }
+
+    document.getElementById('clear').onclick = clear;
+    document.getElementById('delete').onclick = deleteLast;
+
+    Array.from(document.getElementsByClassName('button_number')).forEach(button => {
+      button.onclick = function() {
+        const id = this.id;
+        if (id === 'equals') {
+          calculate();
+        } else if (['+', '-', 'x', '/'].includes(id)) {
+          handleOperation(id);
+        } else {
+          handleNumber(id);
+        }
+      };
+    });
+  </script>
+</body>
+</html>
